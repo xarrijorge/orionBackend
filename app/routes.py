@@ -3,8 +3,8 @@ from app import app  # Import the app instance
 import psycopg2
 
 
+# Connect to the database using app configuration
 def connect_to_database():
-    # Connect to the database using app configuration
     conn = psycopg2.connect(
         dbname=app.config['SQLALCHEMY_DATABASE_URI'].split('/')[-1],
         user=app.config['SQLALCHEMY_DATABASE_URI'].split('://')[1].split(':')[0],
@@ -15,6 +15,7 @@ def connect_to_database():
     return conn
 
 
+# Commit the transaction
 def execute_query(query, values=None):
     conn = connect_to_database()
     cur = conn.cursor()
@@ -23,33 +24,68 @@ def execute_query(query, values=None):
     else:
         cur.execute(query)
     result = cur.fetchall()
-    conn.commit()  # Commit the transaction
+    conn.commit()
     cur.close()
     conn.close()
     return result
 
+
+#Authetication
 @app.route('/users')
 def users():
     try:
         # Execute SQL query
         users = execute_query("SELECT id, created_at, username, email FROM users")
-        # Return data as JSON
         return jsonify(users)
     except Exception as e:
-        # Handle any exceptions
         return f"Error: {e}"
 
+
+#fetch methods
 @app.route('/properties')
 def properties():
     try:
-        # Execute SQL query
-        properties = execute_query("SELECT id, name, num_units, manager_id, latitude, longitude  FROM maintenance.properties")
-        # Return data as JSON
-        return jsonify(properties)
+        property_id = request.args.get('id')
+        if property_id:
+            # If an id is passed, return the property with that id
+            property_data = execute_query("SELECT p_id, p_name, p_num_units, p_manager_id, p_country, p_city, p_address, p_zipcode, p_state, p_latitude, p_longitude, p_elevation, p_f_id FROM maintenance.properties WHERE p_id = %s", (property_id,))
+        else:
+            # If no id is passed, return all properties
+            property_data = execute_query("SELECT p_id, p_name, p_num_units, p_manager_id, p_country, p_city, p_address, p_zipcode, p_state, p_latitude, p_longitude, p_elevation, p_f_id FROM maintenance.properties")
+        
+        return jsonify(property_data)
     except Exception as e:
-        # Handle any exceptions
         return f"Error: {e}"
 
+
+@app.route('/units')
+def units():
+    try:
+        unit_id = request.args.get('id')
+        if unit_id:
+            units_data = execute_query("SELECT u_id, u_name, u_type, u_status, u_description, u_p_id, u_f_id FROM maintenance.units WHERE u_id = %s", (unit_id,))
+        else:
+            units_data = execute_query("SELECT u_id, u_name, u_type, u_status, u_description, u_p_id FROM maintenance.units")
+        return jsonify(units_data)
+    except Exception as e:
+        return f"Error: {e}"
+
+
+@app.route('/leases')
+def leases():
+    try:
+        lease_id = request.args.get('id')
+        if lease_id:
+            lease_data = execute_query("SELECT l_id, l_start_date, l_end_date, l_rent, l_u_id, tenant_name, l_code, l_email, l_phone, l_secondary_phone, l_national_id from maintenance.leases WHERE l_id = %s" (lease_id,))
+        else:
+            lease_data = execute_query("SELECT l_id, l_start_date, l_end_date, l_rent, l_u_id, tenant_name, l_code, l_email, l_phone, l_secondary_phone, l_national_id from maintenance.leases " )
+        return jsonify(lease_data)
+    except Exception as e:
+        return f"Error: {e}"
+
+
+
+#post methods
 
 @app.route('/add-properties', methods=['POST'])
 def add_property():
