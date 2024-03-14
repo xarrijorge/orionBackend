@@ -2,35 +2,6 @@ from flask import jsonify,  request
 from .. import app
 
 
-
-#Authetication
-# Route to handle both GET and POST requests for users
-@app.route('/oldusers', methods=['GET', 'POST'])
-def handle_users():
-    if request.method == 'GET':
-        try:
-            # Execute SQL query to fetch users data
-            users = execute_query("SELECT id, created_at, username, email FROM users.users")
-            return jsonify(users)
-        except Exception as e:
-            return f"Error: {e}", 500  # Return error message with 500 status code for internal server error
-    elif request.method == 'POST':
-        try:
-            # Get data from request body
-            data = request.json
-            username = data.get('username')
-            email = data.get('email')
-            
-   # Execute SQL query to insert new user data
-            execute_query("INSERT INTO users.users (username, email) VALUES (%s, %s)", (username, email))
-            
-            
-            return "User created successfully", 201  # Return success message with 201 status code for resource created
-        except Exception as e:
-            return f"Error: {e}", 500  # Return error message with 500 status code for internal server error
-
-
-
 @app.route('/units')
 def units():
     try:
