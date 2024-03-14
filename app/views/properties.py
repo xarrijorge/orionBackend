@@ -5,7 +5,7 @@ from werkzeug.exceptions import abort
 
 from app.views.auth import login_required
 
-from app.views.default import get_db
+from app.views.db import get_db
 
 from .. import app
 

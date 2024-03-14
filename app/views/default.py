@@ -1,52 +1,6 @@
 from flask import jsonify,  request
 from .. import app
-import psycopg2
 
-
-# Connect to the database using app configuration
-def get_db():
-    conn = psycopg2.connect(
-        dbname=app.config['SQLALCHEMY_DATABASE_URI'].split('/')[-1],
-        user=app.config['SQLALCHEMY_DATABASE_URI'].split('://')[1].split(':')[0],
-        password=app.config['SQLALCHEMY_DATABASE_URI'].split(':')[2].split('@')[0],
-        host=app.config['SQLALCHEMY_DATABASE_URI'].split('@')[1].split(':')[0],
-        port=app.config['SQLALCHEMY_DATABASE_URI'].split(':')[3].split('/')[0]
-    )
-    return conn
-
-
-# Commit the transaction
-def execute_query(query, values=None):
-    conn = get_db()
-    cur = conn.cursor()
-    if values:
-        cur.execute(query, values)
-    else:
-        cur.execute(query)
-    result = cur.fetchall()
-    conn.commit()
-    cur.close()
-    conn.close()
-    return result
-
-
-def execute_query(query, values=()):
-    try:
-        connection = psycopg2.connect(
-            dbname="your_dbname",
-            user="your_username",
-            password="your_password",
-            host="your_host",
-            port="your_port"
-        )
-        cursor = connection.cursor()
-        cursor.execute(query, values)
-        connection.commit()
-    except Exception as e:
-        print(f"Error executing query: {e}")
-    finally:
-        if 'connection' in locals():
-            connection.close()
 
 
 #Authetication
