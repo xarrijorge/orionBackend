@@ -10,7 +10,7 @@ migrate = Migrate(app, db)
 from app.models import *
 
 # Import routes after creating the Flask app to avoid circular imports
-from app.routes import *
+from app.views.default import *
 
 if __name__ == '__main__':
     app.run(debug=True)
