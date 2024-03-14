@@ -5,7 +5,7 @@ from .. import app
 
 #Authetication
 # Route to handle both GET and POST requests for users
-@app.route('/users', methods=['GET', 'POST'])
+@app.route('/oldusers', methods=['GET', 'POST'])
 def handle_users():
     if request.method == 'GET':
         try:
@@ -29,23 +29,6 @@ def handle_users():
         except Exception as e:
             return f"Error: {e}", 500  # Return error message with 500 status code for internal server error
 
-
-
-#fetch methods
-@app.route('/oldproperties')
-def properties():
-    try:
-        property_id = request.args.get('id')
-        if property_id:
-            # If an id is passed, return the property with that id
-            property_data = execute_query("SELECT p_id, p_name, p_num_units, p_manager_id, p_country, p_city, p_address, p_zipcode, p_state, p_latitude, p_longitude, p_elevation, p_f_id FROM maintenance.properties WHERE p_id = %s", (property_id,))
-        else:
-            # If no id is passed, return all properties
-            property_data = execute_query("SELECT p_id, p_name, p_num_units, p_manager_id, p_country, p_city, p_address, p_zipcode, p_state, p_latitude, p_longitude, p_elevation, p_f_id FROM maintenance.properties")
-        
-        return jsonify(property_data)
-    except Exception as e:
-        return f"Error: {e}"
 
 
 @app.route('/units')
