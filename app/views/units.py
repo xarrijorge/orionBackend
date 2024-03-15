@@ -1,12 +1,13 @@
 from flask import (
-    Blueprint,  jsonify
+    Blueprint,  jsonify, request
 )
 from app.views.db import get_db
+from app.views.properties import get_property_data
 
-bp = Blueprint('units', __name__)
+bp = Blueprint('units', __name__, url_prefix='/units')
 
 
-@bp.route('/units')
+@bp.route('/')
 def units():
     db = get_db()
     cursor = db.cursor()
@@ -17,3 +18,49 @@ def units():
     unit_data = cursor.fetchall()
     db.close()
     return jsonify(unit_data)
+
+
+@bp.route('/create', methods=['POST'])
+def create():
+    if request.method == 'POST':
+        data = request.json
+        u_name = data.get('u_name')
+        u_type = data.get('u_type')
+        u_status = data.get('u_status')
+        u_description = data.get('u_description')
+        u_p_id = data.get('u_p_id')
+        p_id = data.get('u_p_id')
+
+        property_data = get_property_data(p_id)
+        if not property_data:
+            return jsonify({'error': 'Property with provided p_id not found.'}), 404
+        u_f_id = property_data['p_f_id']
+        if not data.get('u_pm_id'):
+            u_pm_id = property_data['p_manager_id']
+        
+        error = None
+        if not u_pm_id:
+            error = 'You must select property to add unit.'
+
+        if error is not None:
+            return jsonify({'error': error}), 400  # Return error response
+        else:
+            try:
+                db = get_db()
+                cursor = db.cursor()
+                cursor.execute(
+                    'INSERT INTO maintenance.units (u_name, u_type, u_status, u_description, u_p_id, u_f_id, u_pm_id)'
+                    ' VALUES (%s, %s, %s, %s, %s, %s, %s)',
+                    (u_name, u_type, u_status, u_description, u_p_id, u_f_id, u_pm_id)
+                    
+                )
+                db.commit()
+            except Exception as e:
+                return jsonify({'error': str(e)}), 500  # Return error response
+            finally:
+                cursor.close()  # Close the cursor
+                db.close()  # Close the database connection
+
+        return jsonify({'message': 'unit added successfully'}), 201
+
+    return jsonify({'error': 'Method not allowed'}), 405
