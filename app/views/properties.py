@@ -1,6 +1,7 @@
 from flask import (
     Blueprint, flash, g, redirect, request, url_for, jsonify
 )
+from psycopg2.extras import DictCursor
 from werkzeug.exceptions import abort
 
 from app.views.auth import login_required
@@ -14,13 +15,34 @@ bp = Blueprint('properties', __name__)
 def properties():
     db = get_db()
     cursor = db.cursor()
-    cursor.execute(
-        'SELECT p_id, p_name, p_num_units, p_manager_id, p_country, p_city, p_address, p_zipcode, p_state, p_latitude, p_longitude, p_elevation, p_f_id'
-        ' FROM maintenance.properties'
-    )
+
+    p_id = request.args.get('p_id')  # Get p_id from query parameters, if provided
+
+    if p_id:
+        cursor.execute(
+            'SELECT p_id, p_name, p_num_units, p_manager_id, p_country, p_city, p_address, p_zipcode, p_state, p_latitude, p_longitude, p_elevation, p_f_id'
+            ' FROM maintenance.properties WHERE p_id = %s', (p_id,)
+        )
+    else:
+        cursor.execute(
+            'SELECT p_id, p_name, p_num_units, p_manager_id, p_country, p_city, p_address, p_zipcode, p_state, p_latitude, p_longitude, p_elevation, p_f_id'
+            ' FROM maintenance.properties'
+        )
     property_data = cursor.fetchall()
     db.close()
     return jsonify(property_data)
+
+
+def get_property_data(p_id):
+    db = get_db()
+    cursor = db.cursor(cursor_factory=DictCursor)  # Setting dictionary=True to return results as dictionaries
+    cursor.execute(
+        'SELECT p_f_id, p_id, p_name, p_num_units, p_manager_id, p_country, p_city FROM maintenance.properties WHERE p_id = %s', (p_id,)
+    )
+    property_data = cursor.fetchone()  # Fetch one row because we're fetching data for a single property
+    db.close()
+    return property_data
+
 
 @bp.route('/create', methods=['POST'])
 def create():
