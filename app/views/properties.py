@@ -16,12 +16,18 @@ def properties():
     db = get_db()
     cursor = db.cursor()
 
-    p_id = request.args.get('p_id')  # Get p_id from query parameters, if provided
+    p_id = request.args.get('p_id')
+    p_manager_id = request.args.get('p_manager_id')
 
     if p_id:
         cursor.execute(
             'SELECT p_id, p_name, p_num_units, p_manager_id, p_country, p_city, p_address, p_zipcode, p_state, p_latitude, p_longitude, p_elevation, p_f_id'
             ' FROM maintenance.properties WHERE p_id = %s', (p_id,)
+        )
+    elif p_manager_id:
+        cursor.execute(
+            'SELECT p_id, p_name, p_num_units, p_manager_id, p_country, p_city, p_address, p_zipcode, p_state, p_latitude, p_longitude, p_elevation, p_f_id'
+            ' FROM maintenance.properties WHERE p_manager_id = %s', (p_manager_id,)
         )
     else:
         cursor.execute(

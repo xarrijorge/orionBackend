@@ -3,6 +3,7 @@ from flask import (
 )
 from app.views.db import get_db
 from app.views.properties import get_property_data
+from psycopg2.extras import DictCursor
 
 bp = Blueprint('units', __name__, url_prefix='/units')
 
@@ -11,13 +12,31 @@ bp = Blueprint('units', __name__, url_prefix='/units')
 def units():
     db = get_db()
     cursor = db.cursor()
-    cursor.execute(
+    u_id = request.args.get('u_id')
+    if u_id:
+        cursor.execute(
+            'SELECT u_id, u_name, u_type, u_status, u_description, u_p_id, u_f_id, u_code '
+            ' FROM maintenance.units WHERE u_id = %s', (u_id,)
+        )
+    else:
+        cursor.execute(
         'select u_id, u_name, u_type, u_status, u_description, u_p_id, u_f_id, u_code '
         ' from maintenance.units'
-    )
+        )
     unit_data = cursor.fetchall()
     db.close()
     return jsonify(unit_data)
+
+
+def get_unit_data(u_id):
+    db = get_db()
+    cursor = db.cursor(cursor_factory=DictCursor)  # Setting dictionary=True to return results as dictionaries
+    cursor.execute(
+        'SELECT  u_id, u_name, u_type, u_status, u_description, u_p_id, u_f_id, u_code, u_pm_id FROM maintenance.units WHERE u_id = %s', (u_id,)
+    )
+    unit_data = cursor.fetchone()  # Fetch one row because we're fetching data for a single property
+    db.close()
+    return unit_data
 
 
 @bp.route('/create', methods=['POST'])
@@ -52,7 +71,7 @@ def create():
                     'INSERT INTO maintenance.units (u_name, u_type, u_status, u_description, u_p_id, u_f_id, u_pm_id)'
                     ' VALUES (%s, %s, %s, %s, %s, %s, %s)',
                     (u_name, u_type, u_status, u_description, u_p_id, u_f_id, u_pm_id)
-                    
+                   
                 )
                 db.commit()
             except Exception as e:
