@@ -1,6 +1,9 @@
 from .. import app  # Import the app instance
 import psycopg2
 import click
+from flask import (
+    Blueprint
+)
 
 
 # Connect to the database using app configuration
@@ -35,3 +38,9 @@ def init_db_command():
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
+
+
+bp = Blueprint('landing', __name__)
+@app.route('/')
+def test():
+    return 'Hello there this is orion not error 404'
