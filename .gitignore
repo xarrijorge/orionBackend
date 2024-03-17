@@ -1,6 +1,5 @@
 #custom
 pyenv
-/config.py
 .venv/
 venv/*
 venv/
