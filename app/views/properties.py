@@ -1,17 +1,15 @@
 from flask import (
-    Blueprint, flash, g, redirect, request, url_for, jsonify
+    Blueprint, redirect, request, url_for, jsonify
 )
 from psycopg2.extras import DictCursor
 from werkzeug.exceptions import abort
-
 from app.views.auth import login_required
 
 from app.views.db import get_db
 
-from .. import app
 
-bp = Blueprint('properties', __name__)
-@bp.route('/properties')
+bp = Blueprint('properties', __name__, url_prefix='/properties')
+@bp.route('/')
 def properties():
     db = get_db()
     cursor = db.cursor()
@@ -54,12 +52,24 @@ def get_property_data(p_id):
 def create():
     if request.method == 'POST':
         data = request.json
-        name = data.get('p_name')
-        num_units = data.get('p_num_units')
+
+        p_name = data.get('p_name')
+        p_num_units = data.get('p_num_units')
+        p_manager_id = data.get('p_manager_id')
+        p_country = data.get('p_country')
+        p_city = data.get('p_city')
+        p_address = data.get('p_address')
+        p_zipcode = data.get('p_zipcode')
+        p_state = data.get('p_state')
+        p_latitude = data.get('p_latitude')
+        p_longitude = data.get('p_longitude')
+        p_elevation = data.get('p_elevation')
+        p_f_id = 1
+
         error = None
 
-        if not name:
-            error = 'Name is required.'
+        if not p_name:
+            error = 'Property name is required.'
 
         if error is not None:
             return jsonify({'error': error}), 400  # Return error response
@@ -68,9 +78,13 @@ def create():
                 db = get_db()
                 cursor = db.cursor()
                 cursor.execute(
-                    'INSERT INTO maintenance.properties (p_name, p_num_units)'
-                    ' VALUES (%s, %s)',
-                    (name, num_units)
+                    'INSERT INTO maintenance.properties (p_name, p_num_units,'
+                    'p_manager_id, p_country, p_city, p_address, p_zipcode,'
+                    ' p_state, p_latitude, p_longitude, p_elevation, p_f_id)'
+                    ' VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                    (p_name, p_num_units, p_manager_id, p_country,
+                     p_city, p_address, p_zipcode, p_state, p_latitude,
+                     p_longitude, p_elevation, p_f_id)
                     
                 )
                 db.commit()
