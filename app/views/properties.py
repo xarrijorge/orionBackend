@@ -9,6 +9,7 @@ from app.views.db import get_db
 
 
 bp = Blueprint('properties', __name__, url_prefix='/properties')
+
 @bp.route('/')
 def properties():
     db = get_db()
@@ -35,6 +36,23 @@ def properties():
     property_data = cursor.fetchall()
     db.close()
     return jsonify(property_data)
+
+
+@bp.route('/<int:prop_id>/units')
+def property_units(prop_id):
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute(
+        'SELECT u_id, u_name, u_type, u_status, u_description, u_p_id, u_f_id,'
+        ' u_code'
+        ' FROM maintenance.units WHERE u_p_id = %s', (prop_id,)
+    )
+
+    unit_data = cursor.fetchall()
+    db.close()
+    return jsonify(unit_data)
+
 
 
 def get_property_data(p_id):
