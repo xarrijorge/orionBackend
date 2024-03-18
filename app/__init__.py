@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
 from config import Config
@@ -6,6 +7,7 @@ from config import Config
 app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
+CORS(app)
 
 
 from .views import auth, properties, units, firms, leases, work_orders, db
