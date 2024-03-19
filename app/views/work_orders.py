@@ -22,24 +22,24 @@ def work_orders():
 
     if wo_id:
         query = (
-         'SELECT wo_id, wo_pm_description, wo_l_id, wo_u_id, wo_created_time,'
-         'wo_assigned_to, wo_assigned_by, wo_status, wo_due_date, wo_r_id,'
-         ' r_id, r_type, r_description,r_img_url, r_img_url1, r_img_url2,'
-         'r_l_id, r_u_id, r_created_time, r_phone'
-         'from maintenance.work_order,maintenance.report'
-         'where wo_r_id=r_id and wo_id = %s'
-         'order by wo_created_time,r_created_time desc'
+         'SELECT wo_id, wo_pm_description, wo_l_id, wo_u_id, wo_created_time, '
+         'wo_assigned_to, wo_assigned_by, wo_status, wo_due_date, wo_r_id, '
+         'r_id, r_type, r_description, r_img_url, r_img_url1, r_img_url2, '
+         'r_l_id, r_u_id, r_created_time, r_phone '
+         ' FROM maintenance.work_order, maintenance.report '
+         ' WHERE wo_r_id = r_id AND wo_id = %s '
+         ' ORDER BY wo_created_time, r_created_time DESC'
         )
         cursor.execute(query, (wo_id,))
     elif wo_assigned_by:
         query = (
          'SELECT wo_id, wo_pm_description, wo_l_id, wo_u_id, wo_created_time,'
-         'wo_assigned_to, wo_assigned_by, wo_status, wo_due_date, wo_r_id,'
+         ' wo_assigned_to, wo_assigned_by, wo_status, wo_due_date, wo_r_id,'
          ' r_id, r_type, r_description,r_img_url, r_img_url1, r_img_url2,'
-         'r_l_id, r_u_id, r_created_time, r_phone'
-         'from maintenance.work_order,maintenance.report'
-         'where wo_r_id=r_id and wo_assigned_by = %s'
-         'order by wo_created_time,r_created_time desc'
+         ' r_l_id, r_u_id, r_created_time, r_phone'
+         ' from maintenance.work_order, maintenance.report'
+         ' where wo_r_id=r_id and wo_assigned_by = %s'
+         ' order by wo_created_time,r_created_time desc'
         )
         cursor.execute(query, (wo_assigned_by,))
     elif wo_assigned_to:
@@ -48,8 +48,8 @@ def work_orders():
          'wo_assigned_to, wo_assigned_by, wo_status, wo_due_date, wo_r_id,'
          ' r_id, r_type, r_description,r_img_url, r_img_url1, r_img_url2,'
          'r_l_id, r_u_id, r_created_time, r_phone'
-         'from maintenance.work_order,maintenance.report'
-         'where wo_r_id=r_id and wo_assigned_to = %s'
+         ' from maintenance.work_order, maintenance.report'
+         ' where wo_r_id=r_id and wo_assigned_to = %s'
          'order by wo_created_time,r_created_time desc'
         )
         cursor.execute(query, (wo_assigned_to,))
@@ -59,9 +59,9 @@ def work_orders():
          'wo_assigned_to, wo_assigned_by, wo_status, wo_due_date, wo_r_id,'
          ' r_id, r_type, r_description,r_img_url, r_img_url1, r_img_url2,'
          'r_l_id, r_u_id, r_created_time, r_phone'
-         'from maintenance.work_order,maintenance.report'
-         'order by wo_created_time,r_created_time desc'
+         ' from maintenance.work_order, maintenance.report where wo_r_id=r_id'
+         ' order by wo_created_time,r_created_time desc'
         )
-    property_data = cursor.fetchall()
+    wo_data = cursor.fetchall()
     db.close()
-    return jsonify(property_data)
+    return jsonify(wo_data)
