@@ -38,9 +38,3 @@ def init_db_command():
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
-
-
-bp = Blueprint('landing', __name__)
-@app.route('/')
-def test():
-    return 'Hello there this is orion not error 404'
