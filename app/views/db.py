@@ -1,9 +1,6 @@
 from .. import app  # Import the app instance
 import psycopg2
 import click
-from flask import (
-    Blueprint
-)
 
 
 # Connect to the database using app configuration
@@ -19,13 +16,12 @@ def get_db():
 
 
 def init_db():
-    db = get_db()
+    None
 
 
 def close_db(e=None):
     db = get_db()
     db.close()
-
 
 
 @click.command('init-db')

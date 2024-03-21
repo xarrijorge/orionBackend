@@ -1,6 +1,5 @@
-import functools
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for,
+    Blueprint, flash, redirect, render_template, request, session, url_for,
     jsonify, json,
 )
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -91,7 +90,7 @@ def callback():
         unique_id = userinfo_response.json()["sub"]
         users_email = userinfo_response.json()["email"]
         picture = userinfo_response.json()["picture"]
-        users_name = userinfo_response.json()["given_name"]  
+        users_name = userinfo_response.json()["given_name"]
     else:
         return "User email not available or not verified by Google.", 400
     # Create a user in your db with the information provided
@@ -139,11 +138,12 @@ def index():
         #     "<div><p>Google Profile Picture:</p>"
         #     '<img src="{}" alt="Google profile pic"></img></div>'
         #     '<a class="button" href="/logout">Logout</a>'.format(
-        #         current_user.name, current_user.email, current_user.profile_pic
+        #         current_user.name, current_user.email,
+        #         current_user.profile_pic
         #     )
         # )
     else:
-        return ( 
+        return (
            ' <p>  Resiix By Orion </p> '
            '<br> </br> <br> </br>'
            '<a class="button" href="/login">Google with Login</a>'
