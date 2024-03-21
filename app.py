@@ -1,16 +1,20 @@
+import os
 from flask import Flask
 from config import Config
-from Flask-SQLAlchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask.ext.session import Session
+
+SESSION_TYPE = 'memcache'
 
 app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-from app.models import *
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+sess = Session()
 
-# Import routes after creating the Flask app to avoid circular imports
-from app.views.default import *
 
 if __name__ == '__main__':
+    sess.init_app(app)
     app.run(debug=True)
