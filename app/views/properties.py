@@ -103,7 +103,6 @@ def create():
                     (p_name, p_num_units, p_manager_id, p_country,
                      p_city, p_address, p_zipcode, p_state, p_latitude,
                      p_longitude, p_elevation, p_f_id)
-                    
                 )
                 db.commit()
             except Exception as e:
