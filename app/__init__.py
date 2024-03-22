@@ -9,10 +9,9 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 CORS(app)
 
-from .views import auth, properties, units, work_orders, db
+from .views import auth, properties, units, work_orders
 
 app.register_blueprint(auth.bp)
 app.register_blueprint(properties.bp)
 app.register_blueprint(units.bp)
-app.register_blueprint(db.bp)
 app.register_blueprint(work_orders.bp)
